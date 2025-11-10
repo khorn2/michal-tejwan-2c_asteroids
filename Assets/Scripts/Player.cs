@@ -7,6 +7,11 @@ public class Player : MonoBehaviour
     [SerializeField] private float shipAcceleration = 10f;
     [SerializeField] private float shipMaxVelocity = 10f;
     [SerializeField] private float shipRotationSpeed = 100f;
+    [SerializeField] private float bulletSpeed = 8f;
+
+    [Header("Object references")]
+    [SerializeField] private Transform bulletSpawn;
+    [SerializeField] private Rigidbody2D bulletPrefab;
 
     private Rigidbody2D shipRigidbody;
     private bool isAlive = true;
@@ -23,6 +28,7 @@ public class Player : MonoBehaviour
         {
             HandleShipAcceleration();
             HandleShipRotation();
+            HandleShooting();
         }
     }
 
@@ -49,6 +55,28 @@ public class Player : MonoBehaviour
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             transform.Rotate(Vector3.back * shipRotationSpeed * Time.deltaTime);
+        }
+    }
+
+    private void HandleShooting()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            // Utwórz pocisk w pozycji działka
+            Rigidbody2D bullet = Instantiate(bulletPrefab, bulletSpawn.position, transform.rotation);
+
+            // Kierunek w którym statek aktualnie patrzy
+            Vector2 shipDirection = transform.up;
+
+            // Oblicz prędkość statku w kierunku, w którym leci
+            float shipForwardSpeed = Vector2.Dot(shipRigidbody.velocity, shipDirection);
+
+            // Jeśli statek porusza się do tyłu, nie dodawaj ujemnej prędkości
+            if (shipForwardSpeed < 0)
+                shipForwardSpeed = 0;
+
+            // Nadaj pociskowi prędkość równą prędkości statku + prędkość pocisku
+            bullet.velocity = shipRigidbody.velocity + shipDirection * bulletSpeed;
         }
     }
 }
