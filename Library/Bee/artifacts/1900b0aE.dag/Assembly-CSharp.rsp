@@ -388,6 +388,7 @@
 -analyzer:"D:/Unity projekty/Unity wersje/2022.3.62f3/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/Scripts/Asteroid.cs"
 "Assets/Scripts/Bullet.cs"
+"Assets/Scripts/GameManager.cs"
 "Assets/Scripts/Player.cs"
 "Assets/Scripts/Wrap.cs"
 -langversion:9.0
