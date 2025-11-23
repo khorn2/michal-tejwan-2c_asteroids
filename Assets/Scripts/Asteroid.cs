@@ -3,6 +3,7 @@ using UnityEngine;
 public class Asteroid : MonoBehaviour
 {
     public int size = 3;
+    internal GameManager gameManager;
 
     private void Start()
     {
@@ -17,5 +18,7 @@ public class Asteroid : MonoBehaviour
         float spawnSpeed = Random.Range(4f - size, 5f - size);
 
         rb.AddForce(direction * spawnSpeed, ForceMode2D.Impulse);
+
+        gameManager.asteroidCount++;
     }
 }
