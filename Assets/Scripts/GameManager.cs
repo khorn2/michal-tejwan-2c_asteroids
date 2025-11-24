@@ -7,16 +7,11 @@ public class GameManager : MonoBehaviour
     public int asteroidCount = 0;
     private int level = 0;
 
-    public GameManager()
-    {
-    }
-
     private void Start()
     {
         StartNewLevel();
     }
 
-    // Wywoływane, gdy asteroida zostaje zniszczona
     public void OnAsteroidDestroyed()
     {
         asteroidCount--;
@@ -34,10 +29,9 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < numAsteroids; i++)
         {
+            // spawn w losowym miejscu przy krawędzi
             SpawnAsteroid();
         }
-
-        asteroidCount = numAsteroids;
     }
 
     private void SpawnAsteroid()
@@ -58,7 +52,25 @@ public class GameManager : MonoBehaviour
         Vector2 worldSpawnPosition =
             Camera.main.ViewportToWorldPoint(viewportSpawnPosition);
 
-        Asteroid asteroid = Instantiate(asteroidPrefab, worldSpawnPosition, Quaternion.identity);
-        asteroid.gameManager = this;
+        // użyj metody, która stworzy prefab, ustawi referencje i zwiększy licznik
+        SpawnAsteroidAt(worldSpawnPosition, asteroidPrefab != null ? asteroidPrefab.size : 3);
     }
+
+    // nowa metoda do tworzenia asteroid (używana też przez Asteroid do rozbicia)
+    public Asteroid SpawnAsteroidAt(Vector2 position, int size)
+    {
+        if (asteroidPrefab == null)
+        {
+            Debug.LogError("GameManager: asteroidPrefab nie jest przypisany w inspectorze!");
+            return null;
+        }
+
+        Asteroid a = Instantiate(asteroidPrefab, position, Quaternion.identity);
+        a.size = size;
+        a.gameManager = this;
+        a.asteroidPrefab = asteroidPrefab; // żeby mniejsze mogły wiedzieć, co instantiować
+        asteroidCount++; // GameManager kontroluje licznik
+        return a;
+    }
+    
 }
