@@ -79,6 +79,22 @@ public class Player : MonoBehaviour
             bullet.velocity = shipRigidbody.velocity + shipDirection * bulletSpeed;
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+    if (collision.CompareTag("Asteroid"))
+    {
+        isAlive = false;
+
+        GameManager gameManager = FindAnyObjectByType<GameManager>();
+        if (gameManager != null)
+        {
+            gameManager.GameOver();
+        }
+
+        Destroy(gameObject);
+    }
+    }
 }
 
 
