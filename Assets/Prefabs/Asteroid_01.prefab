@@ -300,5 +300,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8be5f60ba8a6e174fb30eca63fe6f57a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  destroyedParticles: {fileID: 3573216621021188503, guid: 4f514a22a8f1c4d4cb0a3d86d9ebd3f0, type: 3}
   size: 3
   asteroidPrefab: {fileID: 0}

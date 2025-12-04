@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Asteroid : MonoBehaviour
 {
+    [SerializeField] private ParticleSystem destroyedParticles;
     public int size = 3;
     internal GameManager gameManager;
     public Asteroid asteroidPrefab; // przypisywane przez GameManager przy spawnie
@@ -68,6 +69,9 @@ public class Asteroid : MonoBehaviour
             {
                 Debug.LogWarning("Asteroid: gameManager jest null podczas niszczenia (nie powinno się zdarzyć).");
             }
+
+            // Odpowiada za pojawienie się particli przy zniszczeniu asteroidy
+            Instantiate(destroyedParticles, transform.position, Quaternion.identity);
 
             Destroy(gameObject);
         }

@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     [Header("Object references")]
     [SerializeField] private Transform bulletSpawn;
     [SerializeField] private Rigidbody2D bulletPrefab;
+    [SerializeField] private ParticleSystem destroyedParticles;
 
     private Rigidbody2D shipRigidbody;
     private bool isAlive = true;
@@ -91,6 +92,8 @@ public class Player : MonoBehaviour
         {
             gameManager.GameOver();
         }
+        // Odpowiada za pojawienie się particli przy zniszczeniu statku
+        Instantiate(destroyedParticles, transform.position, Quaternion.identity);
 
         Destroy(gameObject);
     }
