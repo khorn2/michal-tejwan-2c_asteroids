@@ -6,12 +6,17 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private Asteroid asteroidPrefab;
 
+    [SerializeField] private TMPro.TextMeshProUGUI scoreText;
+    private int score = 0;
+
     public int asteroidCount = 0;
     private int level = 0;
 
     private void Start()
     {
         StartNewLevel();
+            score = 0;
+        UpdateScoreUI();
     }
 
     public void OnAsteroidDestroyed()
@@ -26,12 +31,14 @@ public class GameManager : MonoBehaviour
 
     private void StartNewLevel()
     {
+        asteroidCount = 0;
+        
         level++;
         int numAsteroids = 2 + (2 * level);
 
         for (int i = 0; i < numAsteroids; i++)
         {
-            // spawn w losowym miejscu przy krawędzi
+        
             SpawnAsteroid();
         }
     }
@@ -54,11 +61,9 @@ public class GameManager : MonoBehaviour
         Vector2 worldSpawnPosition =
             Camera.main.ViewportToWorldPoint(viewportSpawnPosition);
 
-        // użyj metody, która stworzy prefab, ustawi referencje i zwiększy licznik
         SpawnAsteroidAt(worldSpawnPosition, asteroidPrefab != null ? asteroidPrefab.size : 3);
     }
 
-    // nowa metoda do tworzenia asteroid (używana też przez Asteroid do rozbicia)
     public Asteroid SpawnAsteroidAt(Vector2 position, int size)
     {
         if (asteroidPrefab == null)
@@ -70,8 +75,8 @@ public class GameManager : MonoBehaviour
         Asteroid a = Instantiate(asteroidPrefab, position, Quaternion.identity);
         a.size = size;
         a.gameManager = this;
-        a.asteroidPrefab = asteroidPrefab; // żeby mniejsze mogły wiedzieć, co instantiować
-        asteroidCount++; // GameManager kontroluje licznik
+        a.asteroidPrefab = asteroidPrefab; 
+        asteroidCount++; 
         return a;
     }
     
@@ -86,4 +91,27 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         yield return null;
     }
+
+        public void AddScore(int asteroidSize)
+    {
+        int points = 0;
+
+        switch (asteroidSize)
+        {
+            case 3: points = 20; break; 
+            case 2: points = 50; break; 
+            case 1: points = 100; break; 
+        }
+
+        score += points;
+        UpdateScoreUI();
+    }
+        private void UpdateScoreUI()
+    {
+        if (scoreText != null)
+        {
+            scoreText.text = "SCORE: " + score;
+        }
+    }
+
 }
