@@ -6,17 +6,30 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private Asteroid asteroidPrefab;
 
+    [Header("UI")]
     [SerializeField] private TMPro.TextMeshProUGUI scoreText;
+    [SerializeField] private TMPro.TextMeshProUGUI highscoreText;
+
     private int score = 0;
+    private int highscore = 0;
+    private const string HighscoreKey = "AsteroidsHighscore_v1";
 
     public int asteroidCount = 0;
     private int level = 0;
 
+    private void Awake()
+    {
+        // Wczytaj highscore z PlayerPrefs jak najwcześniej
+        highscore = PlayerPrefs.GetInt(HighscoreKey, 0);
+    }
+
     private void Start()
     {
-        StartNewLevel();
-            score = 0;
+        score = 0;
         UpdateScoreUI();
+        UpdateHighscoreUI();
+
+        StartNewLevel();
     }
 
     public void OnAsteroidDestroyed()
@@ -32,13 +45,12 @@ public class GameManager : MonoBehaviour
     private void StartNewLevel()
     {
         asteroidCount = 0;
-        
+
         level++;
         int numAsteroids = 2 + (2 * level);
 
         for (int i = 0; i < numAsteroids; i++)
         {
-        
             SpawnAsteroid();
         }
     }
@@ -68,45 +80,58 @@ public class GameManager : MonoBehaviour
     {
         if (asteroidPrefab == null)
         {
-            Debug.LogError("GameManager: asteroidPrefab nie jest przypisany w inspectorze!");
+
             return null;
         }
 
         Asteroid a = Instantiate(asteroidPrefab, position, Quaternion.identity);
         a.size = size;
         a.gameManager = this;
-        a.asteroidPrefab = asteroidPrefab; 
-        asteroidCount++; 
+        a.asteroidPrefab = asteroidPrefab;
+        asteroidCount++;
         return a;
     }
-    
+
     public void GameOver()
     {
+        // tutaj można dodać dodatkowe zachowanie przed restartem (np. ekran Game Over)
         StartCoroutine(Restart());
     }
+
     private IEnumerator Restart()
     {
         Debug.Log("Game Over!");
         yield return new WaitForSeconds(2f);
+        // przed restartem zapisz highscore (na wszelki wypadek)
+        SaveHighscore();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         yield return null;
     }
 
-        public void AddScore(int asteroidSize)
+    public void AddScore(int asteroidSize)
     {
         int points = 0;
 
         switch (asteroidSize)
         {
-            case 3: points = 20; break; 
-            case 2: points = 50; break; 
-            case 1: points = 100; break; 
+            case 3: points = 20; break;
+            case 2: points = 50; break;
+            case 1: points = 100; break;
         }
 
         score += points;
         UpdateScoreUI();
+
+        // aktualizuj highscore jeśli potrzeba
+        if (score > highscore)
+        {
+            highscore = score;
+            UpdateHighscoreUI();
+            SaveHighscore();
+        }
     }
-        private void UpdateScoreUI()
+
+    private void UpdateScoreUI()
     {
         if (scoreText != null)
         {
@@ -114,4 +139,33 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void UpdateHighscoreUI()
+    {
+        if (highscoreText != null)
+        {
+            highscoreText.text = "HIGHSCORE: " + highscore;
+        }
+    }
+
+    private void SaveHighscore()
+    {
+        PlayerPrefs.SetInt(HighscoreKey, highscore);
+        PlayerPrefs.Save();
+    }
+
+    // opcjonalne: metoda do resetu rekordu (możesz podpiąć do przycisku w UI)
+    public void ResetHighscore()
+    {
+        highscore = 0;
+        SaveHighscore();
+        UpdateHighscoreUI();
+    }
+        private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            ResetHighscore();
+            Debug.Log("Highscore zresetowany");
+        }
+    }
 }
