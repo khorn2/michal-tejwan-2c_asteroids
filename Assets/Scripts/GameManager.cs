@@ -2,7 +2,16 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public interface IGameManager
+{
+    void AddScore(int asteroidSize);
+    void GameOver();
+    void OnAsteroidDestroyed();
+    void ResetHighscore();
+    Asteroid SpawnAsteroidAt(Vector2 position, int size);
+}
+
+public class GameManager : MonoBehaviour, IGameManager
 {
     [SerializeField] private Asteroid asteroidPrefab;
 
@@ -25,6 +34,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1f;
         score = 0;
         UpdateScoreUI();
         UpdateHighscoreUI();
@@ -160,12 +170,35 @@ public class GameManager : MonoBehaviour
         SaveHighscore();
         UpdateHighscoreUI();
     }
-        private void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
             ResetHighscore();
             Debug.Log("Highscore zresetowany");
+        }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            TogglePause();
+        }
+    }
+
+
+    private bool isPaused = false;
+    private void TogglePause()
+    {
+        isPaused = !isPaused;
+
+        if (isPaused)
+        {
+            Time.timeScale = 0f;
+            Debug.Log("PAUZA");
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            Debug.Log("WZNOWIENIE");
         }
     }
 }
